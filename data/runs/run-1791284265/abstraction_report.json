@@ -1,0 +1,45 @@
+{
+  "run_id": "run-1791284265",
+  "stage": "abstraction",
+  "repos": [
+    "repo_a_payments",
+    "repo_b_orders",
+    "repo_c_inventory"
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster-0001",
+      "similarity": 1.0,
+      "match_type": "exact",
+      "functions": [
+        {
+          "repo_id": "repo_a_payments",
+          "function_id": "repo_a_payments:validate_email",
+          "qualified_name": "validate_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        },
+        {
+          "repo_id": "repo_b_orders",
+          "function_id": "repo_b_orders:is_valid_email",
+          "qualified_name": "is_valid_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        }
+      ],
+      "proposed_abstraction": {
+        "api_name": "is_valid_email_format",
+        "signature_sketch": "def is_valid_email_format(value: str) -> bool",
+        "rationale": "Both functions live in a file named validators.py, share identical line span (4-10) and LOC (7), and were flagged as an exact structural match, indicating the same email-format-checking logic was copy-pasted into repo_a_payments and repo_b_orders; consolidating into one shared validator removes duplicate maintenance of email validation rules across repos.",
+        "security_notes": "The qualified_names differ in a way that suggests differing call-site conventions: 'validate_email' (repo_a_payments) may be intended to raise/assert on invalid input while 'is_valid_email' (repo_b_orders) implies a boolean-returning check — despite identical structural hashes, confirm both actually share the same return/error-handling contract before merging, and expose a single boolean-returning primitive plus a thin raising wrapper if callers rely on exception behavior. No evidence from file path, LOC, or line range of a differing regex/threshold/format constant between the two copies, but since email-format rules (e.g., allowed TLDs, max length) are often tweaked ad hoc, keep the validation pattern/constant internal to the shared implementation rather than caller-supplied unless a concrete need to parameterize it is identified."
+      },
+      "impact": null,
+      "migration_plan": null,
+      "suggested_shared_package_path": null
+    }
+  ]
+}

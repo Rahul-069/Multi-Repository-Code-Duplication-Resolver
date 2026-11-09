@@ -1,0 +1,55 @@
+{
+  "run_id": "run-1791282538",
+  "stage": "impact",
+  "repos": [
+    "repo_a_payments",
+    "repo_b_orders",
+    "repo_c_inventory"
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster-0001",
+      "similarity": 1.0,
+      "match_type": "exact",
+      "functions": [
+        {
+          "repo_id": "repo_a_payments",
+          "function_id": "repo_a_payments:validate_email",
+          "qualified_name": "validate_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        },
+        {
+          "repo_id": "repo_b_orders",
+          "function_id": "repo_b_orders:is_valid_email",
+          "qualified_name": "is_valid_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        }
+      ],
+      "proposed_abstraction": {
+        "api_name": "is_valid_email",
+        "signature_sketch": "def is_valid_email(value: str) -> bool",
+        "rationale": "Both functions live at the identical file path (validators.py), occupy the exact same line range (4-10) and LOC (7), and are an exact structural match, strongly suggesting a copy-pasted email-format validator duplicated across repo_a_payments and repo_b_orders. Consolidating into one shared validator eliminates redundant maintenance of what is almost certainly a single regex/format check.",
+        "security_notes": "The two copies have identical shape (same file path, line span, and LOC) with no indication of differing parameter counts or divergent file locations, so there is no structural evidence from the metadata alone that the two implementations encode different rules or constants. Nonetheless, since the actual validation regex/pattern is not visible, the shared implementation should keep the matching pattern as an internal, versioned constant (not caller-supplied) to avoid any repo silently weakening or bypassing email validation by passing a looser pattern, and any future divergence in requirements (e.g. stricter RFC compliance for payments vs. orders) should be handled via an explicit mode/strictness parameter rather than forking the function again."
+      },
+      "impact": {
+        "maintenance_savings_hours_per_year": 3.5,
+        "tech_debt_score": 3.7,
+        "consolidation_risk": "low",
+        "risk_reasons": [
+          "Exact structural match (similarity 1.0) between repo_a_payments:validate_email and repo_b_orders:is_valid_email, including identical file path (validators.py), line range (4-10), and LOC (7), indicating a true copy-paste rather than coincidental structural similarity.",
+          "Both qualified names (validate_email / is_valid_email) describe the same narrow, well-understood purpose (email format validation), so semantic intent is unlikely to diverge.",
+          "repo_a_payments and repo_b_orders are sibling services in the same e-commerce/transaction domain, making a shared validators utility a natural, low-risk fit rather than a cross-domain coupling."
+        ],
+        "priority_rank": 1
+      },
+      "migration_plan": null,
+      "suggested_shared_package_path": null
+    }
+  ]
+}

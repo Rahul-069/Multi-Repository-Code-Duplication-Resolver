@@ -1,0 +1,40 @@
+{
+  "run_id": "run-1791284265",
+  "stage": "duplication",
+  "repos": [
+    "repo_a_payments",
+    "repo_b_orders",
+    "repo_c_inventory"
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster-0001",
+      "similarity": 1.0,
+      "match_type": "exact",
+      "functions": [
+        {
+          "repo_id": "repo_a_payments",
+          "function_id": "repo_a_payments:validate_email",
+          "qualified_name": "validate_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        },
+        {
+          "repo_id": "repo_b_orders",
+          "function_id": "repo_b_orders:is_valid_email",
+          "qualified_name": "is_valid_email",
+          "file_path": "validators.py",
+          "start_line": 4,
+          "end_line": 10,
+          "loc": 7
+        }
+      ],
+      "proposed_abstraction": null,
+      "impact": null,
+      "migration_plan": null,
+      "suggested_shared_package_path": null
+    }
+  ]
+}
